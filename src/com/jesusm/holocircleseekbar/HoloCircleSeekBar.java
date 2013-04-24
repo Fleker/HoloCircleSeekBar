@@ -467,7 +467,6 @@ public class HoloCircleSeekBar extends View {
 			mUserIsMovingPointer = true;
 
 			arc_finish_radians = calculateRadiansFromAngle(mAngle);
-
 			if (arc_finish_radians > end_wheel) {
 				arc_finish_radians = end_wheel;
 				block_end = true;

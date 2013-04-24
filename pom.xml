@@ -40,7 +40,8 @@
         <android.version>4.1.1.4</android.version>
         <android.platform>16</android.platform>
         <android-maven.version>3.2.0</android-maven.version>
-        <android-support.version>r99</android-support.version>
+<!--         <android-support.version>r99</android-support.version> -->
+        <android-support.version>r7</android-support.version>
     </properties>
     <dependencies>
         <dependency>
@@ -53,8 +54,8 @@
             <groupId>com.google.android</groupId>
             <artifactId>support-v4</artifactId>
             <version>${android-support.version}</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/android-support-v4.jar</systemPath>
+           <!--  <scope>system</scope>
+            <systemPath>${basedir}/libs/android-support-v4.jar</systemPath> -->
         </dependency>
     </dependencies>
     <build>
