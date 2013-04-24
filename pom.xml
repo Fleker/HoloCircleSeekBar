@@ -3,9 +3,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.larswerkman</groupId>
-    <artifactId>colorpicker</artifactId>
+    <artifactId>HoloCircleSeekBar</artifactId>
     <packaging>apklib</packaging>
-    <name>Holo ColorPicker</name>
+    <name>HoloCircleSeekBar</name>
     <description>A Holo themed colorpicker designed by Marie Schweiz and Nick Butcher.</description>
     <url>https://github.com/LarsWerkman/HoloColorPicker</url>
     <parent>
