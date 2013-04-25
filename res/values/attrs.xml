@@ -18,6 +18,9 @@
         <attr name="pointer_color" format="string"></attr>
         <attr name="pointer_halo_color" format="string"></attr>
         <attr name="text_color" format="string"></attr>
+        <attr name="thumb" format="integer"></attr>
+                <attr name="thumbPressed" format="integer"></attr>
+        <attr name="thumbOffset" format="integer"></attr>
     </declare-styleable>
 
 </resources>
