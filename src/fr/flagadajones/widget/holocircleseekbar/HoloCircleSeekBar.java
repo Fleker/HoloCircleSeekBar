@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
@@ -64,7 +65,6 @@ public class HoloCircleSeekBar extends View {
      */
     private RectF mColorWheelRectangle = new RectF();
     private Paint mColorCenterHalo;
-    private RectF mColorCenterHaloRectangle = new RectF();
     private Paint mCircleTextColor;
 
     private Paint textPaint;
@@ -306,12 +306,12 @@ public class HoloCircleSeekBar extends View {
         // Instead of translating
         // them we let Canvas do the work for us.
 
-        canvas.translate(mTranslationOffset, mTranslationOffset);
+        canvas.translate(mTranslationOffset, mTranslationOffset-mPointerRadius);
         if (rotate_angle != 0)
             canvas.rotate(rotate_angle);
         // Draw the color wheel.
         //canvas.drawArc(mColorWheelRectangle, start_arc, end_wheel - (start_arc), false, mColorWheelPaint);
-        canvas.drawArc(mColorWheelRectangle, valueDegree, end_wheel - (valueDegree), false, mColorWheelPaint);
+       canvas.drawArc(mColorWheelRectangle, valueDegree, end_wheel - (valueDegree), false, mColorWheelPaint);
 
         canvas.drawArc(mColorWheelRectangle, start_arc, valueDegree - start_arc, false, mArcColor);
    
@@ -339,6 +339,8 @@ public class HoloCircleSeekBar extends View {
             canvas.drawText(text, (mColorWheelRectangle.centerX()) - (textPaint.measureText(text) / 2),
                     mColorWheelRectangle.centerY() + bounds.height() / 2, textPaint);
         }
+        
+     
 
     }
 
@@ -346,16 +348,18 @@ public class HoloCircleSeekBar extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
         int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-        int min = Math.min(width, height);
-        setMeasuredDimension(min, min);
+//        int min = Math.min(width, height);
+//        setMeasuredDimension(min, min);
+        int max = Math.max(width, height);
+        setMeasuredDimension(width, height);
 
-        mTranslationOffset = min * 0.5f;
-        mColorWheelRadius = mTranslationOffset - mPointerRadius;
+        //mTranslationOffset = min * 0.5f;
+        mTranslationOffset = max * 0.5f;
+        mColorWheelRadius = mTranslationOffset - 2*mPointerRadius;
+        //mColorWheelRadius = mTranslationOffset - mPointerRadius;
+
 
         mColorWheelRectangle.set(-mColorWheelRadius, -mColorWheelRadius, mColorWheelRadius, mColorWheelRadius);
-
-        mColorCenterHaloRectangle.set(-mColorWheelRadius / 2, -mColorWheelRadius / 2, mColorWheelRadius / 2,
-                mColorWheelRadius / 2);
 
         pointerPosition = calculatePointerPosition(calculateRadianFromDegree(valueDegree));
 
@@ -418,7 +422,7 @@ public class HoloCircleSeekBar extends View {
         y = oldX * sina + y * cosa;
 
         float distancePoint = (float) Math.sqrt(x * x + y * y);
-        mColorWheelRadius = mTranslationOffset - mPointerRadius;
+//        mColorWheelRadius = mTranslationOffset - mPointerRadius;
         if (distancePoint > mColorWheelRadius + mPointerRadius || distancePoint < mColorWheelRadius - mPointerRadius*2)
             return true;
 
