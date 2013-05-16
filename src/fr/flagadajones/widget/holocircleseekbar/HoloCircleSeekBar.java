@@ -27,12 +27,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * Displays a holo-themed color picker.
- * <p>
- * Use {@link #getColor()} to retrieve the selected color.
- * </p>
- */
+
 public class HoloCircleSeekBar extends View {
     private Drawable mThumb;
     private Drawable mThumbNormal;
@@ -406,6 +401,16 @@ public class HoloCircleSeekBar extends View {
         return value;
     }
 
+    public void setProgress(int value){
+
+        this.value=value;
+        valueDegree = (float) calculateAngleFromValue(value);
+        pointerPosition = calculatePointerPosition(calculateRadianFromDegree(valueDegree));
+        invalidate();
+    }
+    public void setMax(int value){
+        this.max=value;
+    }
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -414,7 +419,7 @@ public class HoloCircleSeekBar extends View {
         double y = event.getY() - mTranslationOffset;
 
         double angleRadian = Math.toRadians(-rotate_angle);
-        ;
+
         double cosa = Math.cos(angleRadian);
         double sina = Math.sin(angleRadian);
         double oldX = x;
