@@ -365,7 +365,7 @@ public class HoloCircleSeekBar extends View {
 
         float f = (float) ((end_wheel - start_arc) / m);
 
-        return Math.round(max / f);
+        return Math.round(max / f)+min;
     }
 
     private int calculateValueFromStartAngle(float angle) {
@@ -373,7 +373,7 @@ public class HoloCircleSeekBar extends View {
 
         float f = (float) ((end_wheel - start_arc) / m);
 
-        return (int) (max / f);
+        return (int) (max / f)+min;
     }
 
     private double calculateAngleFromValue(int position) {
