@@ -21,7 +21,8 @@ Don't forget to add this at the root of your View in the xml layout when you use
         
 You can change some widget components (text size, wheel color, point color, etc) sith this attrs.
  
- 	 app:max="100"
+ 	 app:max="120"
+ 	 app:min="20"
      app:pointer_color="#0174DF"
      app:pointer_halo_color="#88252525"
      app:pointer_size="34"
