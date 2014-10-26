@@ -7,7 +7,8 @@
  * License.
  */
 
-package fr.flagadajones.widget.holocircleseekbar;
+//package fr.flagadajones.widget.holocircleseekbar;
+package com.felkertech.n.conductor;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -24,11 +25,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 
 public class HoloCircleSeekBar extends View {
+    private static final String TAG = "HoloCircleSeekbar";
     private Drawable mThumb;
     private Drawable mThumbNormal;
     private Drawable mThumbPressed;
@@ -96,6 +99,8 @@ public class HoloCircleSeekBar extends View {
     private int start_arc = 0;
     private int end_wheel = 360;
 
+    private String text_suffix;
+
     private int rotate_angle = 0;
     private boolean show_text = true;
 
@@ -145,6 +150,7 @@ public class HoloCircleSeekBar extends View {
         }
         mThumb = thumb;
         //mPointerRadius = thumb.getIntrinsicWidth() / 2;
+//        mPointerRadius = 32;
         mPointerRadius = 32;
         invalidate();
         if (needUpdate) {
@@ -209,7 +215,7 @@ public class HoloCircleSeekBar extends View {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
         textPaint.setColor(text_color);
         textPaint.setStyle(Style.FILL_AND_STROKE);
-        textPaint.setTextAlign(Align.LEFT);
+        textPaint.setTextAlign(Align.CENTER);
         textPaint.setTextSize(text_size);
 
         mArcColor = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -234,7 +240,7 @@ public class HoloCircleSeekBar extends View {
         String wheel_unactive_color_attr;
         String text_color_attr;
 
-        min = a.getInteger(R.styleable.HoloCircleSeekBar_min, 00);
+        min = a.getInteger(R.styleable.HoloCircleSeekBar_min, 0);
         max = a.getInteger(R.styleable.HoloCircleSeekBar_max, 100);
 
         start_arc = a.getInteger(R.styleable.HoloCircleSeekBar_start_angle, 0);
@@ -243,6 +249,7 @@ public class HoloCircleSeekBar extends View {
         rotate_angle = a.getInteger(R.styleable.HoloCircleSeekBar_rotate_angle, 0);
 
         show_text = a.getBoolean(R.styleable.HoloCircleSeekBar_show_text, true);
+        text_suffix = a.getString(R.styleable.HoloCircleSeekBar_text_suffix);
 
         mColorWheelStrokeWidth = a.getInteger(R.styleable.HoloCircleSeekBar_wheel_size, 4);
         wheel_color_attr = a.getString(R.styleable.HoloCircleSeekBar_wheel_active_color);
@@ -311,8 +318,8 @@ public class HoloCircleSeekBar extends View {
         canvas.drawArc(mColorWheelRectangle, start_arc, valueDegree - start_arc, false, mArcColor);
    
         // draw the thumb
-        int height =(int)(32 );// mThumb.getIntrinsicHeight() / 2;
-        int width = (int)(32 );//mThumb.getIntrinsicWidth() / 2;
+        int height =(int)(32);// mThumb.getIntrinsicHeight() / 2;
+        int width = (int)(32);//mThumb.getIntrinsicWidth() / 2;
 
         mThumb.setBounds((int) pointerPosition[0] - width, (int) pointerPosition[1] - height, (int) pointerPosition[0]
                 + width, (int) pointerPosition[1] + height);
@@ -331,8 +338,8 @@ public class HoloCircleSeekBar extends View {
         if (show_text) {
             String text = String.valueOf(value);
             textPaint.getTextBounds(text, 0, text.length(), bounds);
-            canvas.drawText(text, (mColorWheelRectangle.centerX()) - (textPaint.measureText(text) / 2),
-                    mColorWheelRectangle.centerY() + bounds.height() / 2, textPaint);
+            canvas.drawText(text+text_suffix, (mColorWheelRectangle.centerX()),
+                    mColorWheelRectangle.centerY()+16, textPaint);
         }
         
      
@@ -364,8 +371,8 @@ public class HoloCircleSeekBar extends View {
         float m = angle - start_arc;
 
         float f = (float) ((end_wheel - start_arc) / m);
-
-        return Math.round(max / f)+min;
+//        Log.d(TAG, angle+";"+end_wheel+";"+start_arc+";"+f+"  "+max+", "+min);
+        return Math.round((max-min) / f)+min;
     }
 
     private int calculateValueFromStartAngle(float angle) {
@@ -373,12 +380,13 @@ public class HoloCircleSeekBar extends View {
 
         float f = (float) ((end_wheel - start_arc) / m);
 
-        return (int) (max / f)+min;
+        return Math.round((max-min) / f)+min;
     }
 
     private double calculateAngleFromValue(int position) {
-        return (1.0 * position) / (max - min) * (end_wheel - start_arc);
-
+//        Log.d(TAG, position+" - "+max+"  "+min+" - "+end_wheel+" - "+start_arc+" = "+((1.0*(max-min))/360 * position - (max-min)/360*min));
+//        return (1.0 * position) / (max - min) * (end_wheel - start_arc);
+        return (1.0*(max-min))/360 * position - (max-min)/360*min;
     }
 
     private float calculateDegreeFromRadian(float radian) {
@@ -411,7 +419,10 @@ public class HoloCircleSeekBar extends View {
     public void setMax(int value){
         this.max=value;
     }
-    
+    public void setMin(int value){
+        this.min=value;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // Convert coordinates to our internal coordinate system
@@ -426,16 +437,19 @@ public class HoloCircleSeekBar extends View {
         x = x * cosa - y * sina;
         y = oldX * sina + y * cosa;
 
+        //First, let's do some error correction.
+        //To be close to the circle, with a radius of root(x^2+y^2)
         float distancePoint = (float) Math.sqrt(x * x + y * y);
 //        mColorWheelRadius = mTranslationOffset - mPointerRadius;
-        if (distancePoint > mColorWheelRadius + mPointerRadius || distancePoint < mColorWheelRadius - mPointerRadius*2)
+        Log.d(TAG, x+", "+y);
+//        Log.d(TAG, mColorWheelRadius+", "+mPointerRadius+",, "+distancePoint+" - "+(mColorWheelRadius+mPointerRadius)+", "+(mColorWheelRadius-mPointerRadius));
+        if (distancePoint > mColorWheelRadius + mPointerRadius || distancePoint < mColorWheelRadius - mPointerRadius)
             return true;
 
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
             mThumb = mThumbPressed;
         case MotionEvent.ACTION_MOVE:
-
             valueDegree = calculateDegreeFromRadian((float) (java.lang.Math.atan2(y, x)));
             if (valueDegree > end_wheel) {
 
@@ -447,6 +461,7 @@ public class HoloCircleSeekBar extends View {
 
             value = calculateValueFromAngle(valueDegree);
             pointerPosition = calculatePointerPosition((float) Math.toRadians(valueDegree)/* mAngle */);
+//            Log.d(TAG, valueDegree+", "+value+", "+pointerPosition+", <"+event.getX()+","+event.getY()+">");
             invalidate();
             if (mOnCircleSeekBarChangeListener != null)
                 mOnCircleSeekBarChangeListener.onProgressChanged(this, value, true);
